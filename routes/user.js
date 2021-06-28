@@ -22,17 +22,18 @@ router.get('/login', (req, res) => {
 /* GET manage page. */
 router.get('/manage', (req, res) => {
     if (typeof req.session.grant !== "undefined" || req.session.grant === true) {
+        res.end(JSON.stringify(req.session.grant.response, null, 2))
         // User has signed in, check to see if they are in the database
-        User.exists({ twitterid: req.session.grant.response.raw.user_id }).then(exists => {
-            if (exists) {
-                res.render("pages/manage", {profile: req.session.grant.response})
-            } else {
-                const newUser = new User({ twitterid: req.session.grant.response.raw.user_id });
-                newUser.save().then(() => {
-                    res.render("pages/manage", {profile: req.session.grant.response})
-                });
-            }
-          })
+        //User.exists({ twitterid: req.session.grant.response.raw.user_id }).then(exists => {
+        //    if (exists) {
+                //res.render("pages/manage", {profile: req.session.grant.response})
+        //    } else {
+        //        const newUser = new User({ twitterid: req.session.grant.response.raw.user_id });
+        //        newUser.save().then(() => {
+        //            res.render("pages/manage", {profile: req.session.grant.response})
+        //        });
+        //    }
+        //  })
     } else {
         res.redirect("/")
     }
