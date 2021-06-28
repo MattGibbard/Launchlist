@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(session({secret: process.env.SESSION_SECRET, saveUninitialized: true, resave: false}))
-app.use(grant(require('./grantConfig')))
+app.use(grant(require('./config/grantConfig')))
 
 app.use('/', indexRouter);
 app.use('/', userRouter);
