@@ -8,16 +8,19 @@ Launchlist is a simple and sharable todo list.
 
 ### 👇 Features
 - Sign in with Twitter
-
-### ⏰ Coming soon
 - Create task item
 - Save task item against users
 - Show task list upon sign in
+
+### ⏰ Coming soon
 - Delete tasks
 - Completed tasks
 - Overdue tasks
 - Share task list
-
+- Simple design
+- Emoji on tasks
+- Reorder tasks
+- Delete profile
 
 ## Installation
 

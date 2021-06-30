@@ -2,3 +2,27 @@
 <h2>Hey, <%= profile.raw.screen_name %></h2>
 <a href="/manage">Manage</a>
 <a href="/logout">Log out</a>
+
+<% if (typeof tasks !== 'undefined') { %>
+    <p><%= tasks.length %> tasks found</>
+<% } %>
+
+<ul>
+    <% if (typeof tasks !== 'undefined') { %>
+        <% for(var i=0; i<tasks.length; i++) {%>
+            <tr>
+                <td>
+                    <li><%= tasks[i].taskText %></li>
+                </td>
+            </tr>
+        <% } %>
+    <% } %>
+</ul>
+
+<form action="/create" method="POST">
+    <label for="taskText">Task:</label>
+    <input type="text" id="taskText" name="taskText"><br><br>
+    <label for="status">Status:</label>
+    <input type="number" id="status" name="status"><br><br>
+    <input type="submit" value="Create">
+</form> 

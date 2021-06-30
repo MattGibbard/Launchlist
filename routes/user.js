@@ -21,15 +21,27 @@ router.get('/login', (req, res) => {
 
 /* GET manage page. */
 router.get('/manage', (req, res) => {
-    if (typeof req.session.grant !== "undefined" || req.session.grant === true) {
-        // res.end(JSON.stringify(req.session.grant.response, null, 2))
+    if (isLoggedIn(req)) {
         // User has signed in, check to see if they are in the database
         User.exists({ twitterid: req.session.grant.response.raw.user_id }).then(exists => {
+            // TODO - Need to add a catch here in case the find errors for some reason
+            // ? - Can the 'exists' and 'find' below be combined into a single line?
             if (exists) {
-                res.render("pages/manage", {profile: req.session.grant.response})
+                User.find({twitterid: req.session.grant.response.raw.user_id}).exec()
+                // TODO - Need to update the above to 'findOne' or check if more than one user was found in the database
+                .then(function(result) {
+                    // Render the manage template and pass through the session data and tasks from the database
+                    res.render("pages/manage", {profile: req.session.grant.response, tasks: result[0].tasks})
+                })
+                .catch(function(error){
+                    // TODO - Implement real logging to log errors correctly
+                    console.log(error)
+                    res.redirect("/")
+                })
             } else {
                 const newUser = new User({ twitterid: req.session.grant.response.raw.user_id });
                 newUser.save().then(() => {
+                    // TODO - Need to add a catch here in case the save action errors
                     res.render("pages/manage", {profile: req.session.grant.response})
                 });
             }
@@ -40,14 +52,13 @@ router.get('/manage', (req, res) => {
 })
 
 /* GET manage page. */
-router.get('/create', (req, res) => {
-    if (typeof req.session.grant !== "undefined" || req.session.grant === true) {
-        // User.findOneAndUpdate({twitterid: req.session.grant.response.raw.user_id}, {tasks: {taskText: "hello", status: "1"}})
-        User.findOneAndUpdate({ twitterid: req.session.grant.response.raw.user_id }, { $push: { tasks: {taskText: "hello", status: "1"}}  }, {useFindAndModify: false},function (error, success) {
+router.post('/create', (req, res) => {
+    if (isLoggedIn(req)) {
+        User.findOneAndUpdate({ twitterid: req.session.grant.response.raw.user_id }, { $push: { tasks: {taskText: req.body.taskText, status: req.body.status}}  }, {useFindAndModify: false},function (error, success) {
                  if (error) {
                      console.log(error);
                  } else {
-                     console.log(success);
+                     // console.log(success);
                  }
              });
         res.redirect("/manage")
@@ -61,5 +72,15 @@ router.get('/logout', (req, res) => {
     req.session.destroy()
     res.redirect("/")
 })
+
+
+/* Function to check to see if the user is logged in */
+function isLoggedIn(req) {
+    if (typeof req.session.grant !== "undefined" || req.session.grant === true) {
+        return true
+    } else {
+        return false
+    }
+}
 
 module.exports = router;
